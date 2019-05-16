@@ -1,0 +1,30 @@
+package com.nko.demo.producer;
+
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.kafka.support.ProducerListener;
+import org.springframework.stereotype.Component;
+
+/**
+ * @author: nko-sun
+ * @Date: 2019/4/19 10:52
+ * @Description: 消息结果回调
+ * 获取KafkaTemplate发送消息的结果去判断消息是否发送成功，如果消息发送失败，则会重新发送或者执行对应的业务逻辑。
+ */
+@Component
+public class KafkaSendResultHandler implements ProducerListener {
+
+    private static final Logger log = LoggerFactory.getLogger(KafkaSendResultHandler.class);
+
+    @Override
+    public void onSuccess(ProducerRecord producerRecord, RecordMetadata recordMetadata) {
+        log.info("Message send success : " + producerRecord.toString());
+    }
+
+    @Override
+    public void onError(ProducerRecord producerRecord, Exception exception) {
+        log.info("Message send error : " + producerRecord.toString());
+    }
+}

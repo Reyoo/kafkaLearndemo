@@ -1,0 +1,58 @@
+package com.nko.demo.thread;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * @author: nko-sun
+ * @Date: 2019/4/19 10:22
+ * @Description:
+ */
+@Component
+@Slf4j
+public class AsyncServiceImpl  implements AsyncService{
+    private static Logger logger = LogManager.getLogger(AsyncServiceImpl.class.getName());
+
+
+    @Async("asyncServiceExecutor")
+    @Override
+    @KafkaListener(topics = {"sunqi"})
+    public void writeMess(ConsumerRecord<?, ?> record){
+        logger.info("线程-" + Thread.currentThread().getId() + "在执行写入");
+        try {
+            Optional<?> kafkaMessage = Optional.ofNullable(record.value());
+
+            if (kafkaMessage.isPresent()) {
+                Object o = kafkaMessage.get();
+                Thread.sleep(31000);
+                log.info("---------------------record--1 = " + record);
+                log.info("---------------------message--1 = " + o);
+            }
+            System.out.println("执行--> " + new Date());
+        }catch (Exception e) {
+            logger.info(e.getMessage());
+        }
+    }
+
+
+    public void listen(ConsumerRecord<?, ?> record) {
+        Optional<?> kafkaMessage = Optional.ofNullable(record.value());
+
+        if (kafkaMessage.isPresent()) {
+            Object o = kafkaMessage.get();
+            log.info("---------------------record--1 = " + record);
+            log.info("---------------------message--1 = " + o);
+        }
+    }
+}
